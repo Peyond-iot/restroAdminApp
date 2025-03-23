@@ -1,81 +1,61 @@
-import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import React from "react";
 import Login from "./login.tsx";
-import Dashboard from './dashboard.tsx';
-import { supabase } from "../supabaseClient.ts";
-import Header from "../component/header/header.tsx";
-import Menu from "./menu.tsx";
-import AddMenu from "./addMenu.tsx";
+import Dashboard from "../component/dashboard/dashboard.tsx";
 
-const Home = () => {
+// Function to check token expiration
+const isTokenExpired = (token: string): boolean => {
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1])); // Decode JWT token
+    return payload.exp * 1000 < Date.now(); // Check if expired
+  } catch (error) {
+    return true;
+  }
+};
+
+function Home() {
+  const [logged, setLogged] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const existingLogin = sessionStorage.getItem("login");
+
+    if (!existingLogin) {
+      setLogged(false);
+      return;
+    }
+
+    try {
+      const login = JSON.parse(existingLogin);
+      const isTokenValid = login?.token && !isTokenExpired(login.token);
+      
+      // Prevent unnecessary updates
+      if (logged !== isTokenValid) {
+        setLogged(isTokenValid);
+      }
+    } catch (error) {
+      setLogged(false);
+    }
+  }, [logged]); // Empty dependency array to run only once
+
+  if (logged === null)
     return (
-        <Router>
-          <MainLayout />
-        </Router>
-      );
-}
-
-const MainLayout = () => {
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate(); 
-  const location = useLocation();
-  const[userDetails, setUserDetails] = useState<any>();
-  const [route, setRoute] = useState<boolean>();
-
-    useEffect(() => {  
-
-      const fetchSession = async () => {
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (session) {
-          if(location.pathname === '/' || location.pathname === '/sign-in'){
-            navigate('/dashboard')
-          }
-          setRoute(true);
-          const user: any = JSON.stringify(session?.user?.user_metadata);
-          localStorage.setItem('userDetails', user);
-          setUserDetails(JSON.parse(user));
-        } else {
-          setRoute(false)
-          navigate('/sign-in')
-        }
-        setTimeout(()=>{
-          setLoading(false);
-        },2000)
-      };
-    
-      fetchSession();
-
-    }, [navigate]);
-
-    return (
-        <div>
-          {loading && (
-            <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-opacity-40 backdrop-blur-sm z-50">
-                <div className="p-4 bg-white rounded-full shadow-lg">
-                <img src="assets/loading.gif" className="w-20 h-20" alt="Loading..." />
-                </div>
-            </div>
-        )}
-          {route && <Header userDetails={userDetails} url={location?.pathname}/>}
-          <Routes>
-            {!route && (
-                <>
-              <Route path="/sign-in" element={<Login/>} />
-              </>
-            )}
-              {/* Protected Routes */}
-            {route && (
-              <>
-                <Route path="/dashboard" element={<Dashboard userDetails={userDetails}/>}/>
-                <Route path="/menu" element={<Menu/>} />
-                <Route path="/add-menu" element={<AddMenu/>} />
-              </>
-            )}
-          </Routes>
+      <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-opacity-40 backdrop-blur-sm z-50">
+        <div className="p-4 bg-white rounded-full shadow-lg">
+          <img src="assets/loading.gif" className="w-20 h-20" alt="Loading..." />
         </div>
+      </div>
     );
 
+  return (
+    <Router>
+      <Routes>
+        <Route path="/sign-in" element={logged ? <Navigate to="/dashboard" /> : <Login />} />
+        <Route path="/dashboard" element={logged ? <Dashboard /> : <Navigate to="/sign-in" />} />
+        <Route path="*" element={<Navigate to="/sign-in" />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default Home
+export default Home;
