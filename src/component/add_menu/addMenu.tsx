@@ -11,6 +11,9 @@ const AddMenu = () => {
   const handleMenuSubmit = async (menuData: any) => {
     setLoading(true);
 
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${token.token}`);
+
     var formdata = new FormData();
     formdata.append("name", menuData.name);
     formdata.append("title", menuData.name);
@@ -30,11 +33,8 @@ const AddMenu = () => {
       formdata.append("altImage", menuData.altImage, menuData.altImage.name);
 
     var requestOptions: any = {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token.token}`,
-        
-      },
+      method: 'POST',
+      headers: myHeaders,
       body: formdata,
       redirect: "follow",
     };
@@ -51,6 +51,8 @@ const AddMenu = () => {
         setLoading(false);
         console.error(error);
       });
+
+   
   };
 
   return (
@@ -68,7 +70,7 @@ const AddMenu = () => {
       )}
       {/* Menu Form */}
       <div>
-        <MenuForm onSubmit={handleMenuSubmit} removeData={removeData} />
+        <MenuForm onSubmit={handleMenuSubmit} setRemove={setRemoveData} removeData={removeData} popData={''} />
       </div>
     </div>
   );

@@ -5,6 +5,8 @@ import AddMenu from "../add_menu/addMenu.tsx";
 import DashoardContent from "./dashboard_content/dashboard_content.tsx";
 import CreateAccount from "../create_account/create_account.tsx";
 import Table from "../table/table.tsx";
+import Staff from "../staff/staff.tsx";
+import LiveOrder from "../live_order/live_order.tsx";
 
 const Dashboard = () => {
   const [isLoading, setisLoading] = useState(false);
@@ -58,9 +60,10 @@ const Dashboard = () => {
           {activeTab === "Dashboard" && <DashoardContent/>}
           {activeTab === "Menu" && <Menu/>}
           {activeTab === "Add Menu" && <AddMenu/>}
-          {activeTab === "Staff" && <AddMenu/>}
+          {activeTab === "Staff" && <Staff/>}
           {activeTab === "Create Account" && <CreateAccount/>}
           {activeTab === "Tables" && <Table/>}
+          {activeTab === "Live Order" && <LiveOrder/>}
         </div>
       </div>
     </div>

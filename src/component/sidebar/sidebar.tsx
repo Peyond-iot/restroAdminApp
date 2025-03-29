@@ -9,10 +9,11 @@ const Sidebar: React.FC<SidebarProps> = ({ setActiveTab, activeTab }) => {
   const menuButtons = [
     { text: "Dashboard", icon: "assets/dashboard.svg", icon_w: "assets/dashboard-w.svg"},
     { text: "Menu", icon: "assets/menu.svg", icon_w: "assets/menu-w.svg"},
-    { text: "Staff", icon: "assets/user.svg", icon_w: "assets/user-w.svg"},
     { text: "Add Menu", icon: "assets/add_menu.svg", icon_w: "assets/add_menu-w.svg"},
+    { text: "Staff", icon: "assets/user.svg", icon_w: "assets/user-w.svg"},
     { text: "Create Account", icon: "assets/create_user.svg", icon_w: "assets/create_user-w.svg" },
     { text: "Tables", icon: "assets/table.svg", icon_w: "assets/table-w.svg" },
+    { text: "Live Order", icon: "assets/live_order.svg", icon_w: "assets/live_order-w.svg" },
   ];
 
   return (

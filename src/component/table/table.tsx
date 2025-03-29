@@ -137,7 +137,7 @@ const Table = () => {
                     setShowPopup(true);
                     setSelectedTable(tab);
                 }}
-                  className="absolute -top-1 -right-1 bg-white rounded-full p-1 shadow-md hover:bg-gray-100"
+                  className="absolute -top-1 -right-1 bg-white rounded-full p-1 shadow-md hover:bg-gray-100 cursor-pointer"
                 >
                   <img
                     src="assets/delete.svg"
@@ -162,7 +162,7 @@ const Table = () => {
                       <div className="flex justify-center gap-4">
                         <button
                           onClick={() => setShowPopup(false)}
-                          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 cursor-pointer"
                         >
                           Cancel
                         </button>
@@ -171,7 +171,7 @@ const Table = () => {
                             deleteTable(selectedTable)
                             setShowPopup(false);
                           }}
-                          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
                         >
                           Delete
                         </button>
