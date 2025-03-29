@@ -18,24 +18,31 @@ function Home() {
   const [logged, setLogged] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const existingLogin = sessionStorage.getItem("login");
+    let checkLogin = () =>{
+      const existingLogin = sessionStorage.getItem("login");
 
-    if (!existingLogin) {
-      setLogged(false);
-      return;
-    }
-
-    try {
-      const login = JSON.parse(existingLogin);
-      const isTokenValid = login?.token && !isTokenExpired(login.token);
-      
-      // Prevent unnecessary updates
-      if (logged !== isTokenValid) {
-        setLogged(isTokenValid);
+      if (!existingLogin) {
+        setLogged(false);
+        return;
       }
-    } catch (error) {
-      setLogged(false);
+  
+      try {
+        const login = JSON.parse(existingLogin);
+        const isTokenValid = login?.token && !isTokenExpired(login.token);
+        
+        // Prevent unnecessary updates
+        if (logged !== isTokenValid) {
+          setLogged(isTokenValid);
+        }
+      } catch (error) {
+        setLogged(false);
+      }
     }
+    
+    setInterval(()=>{
+      checkLogin()
+    },1000)
+    
   }, [logged]); // Empty dependency array to run only once
 
   if (logged === null)

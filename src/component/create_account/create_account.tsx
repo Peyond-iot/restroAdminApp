@@ -1,6 +1,5 @@
 import React from "react";
 import { useState } from "react";
-import bcrypt from "bcryptjs";
 
 const login: any = sessionStorage.getItem("login");
 const token = JSON.parse(login);
@@ -27,16 +26,15 @@ const CreateAccount: React.FC = () => {
     e.preventDefault();
     setLoading(true);
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(formData.password, salt);
-    setFormData({ ...formData, password: hashedPassword });
+    var raw: any = JSON.stringify(formData)
 
     var requestOptions: any = {
-      method: "POST",
+      method: 'POST',
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token.token}`,
       },
-      body: JSON.stringify(formData),
+      body: raw,
       redirect: "follow",
     };
 
@@ -47,9 +45,6 @@ const CreateAccount: React.FC = () => {
       .then((response) => response.text())
       .then((result) => {
         setLoading(false);
-        // if (result) {
-        //   setRemoveData(true);
-        // }
       })
       .catch((error) => {
         setLoading(false);

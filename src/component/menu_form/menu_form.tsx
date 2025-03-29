@@ -2,11 +2,18 @@ import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 
 type MenuFormProps = {
-    onSubmit: (menuData: any) => void;
-    removeData: boolean;
-}
+  onSubmit: (menuData: any) => void;
+  setRemove: (remove: boolean) => void;
+  removeData: boolean;
+  popData: any;
+};
 
-const MenuForm: React.FC<MenuFormProps> = ({ onSubmit, removeData }) => {
+const MenuForm: React.FC<MenuFormProps> = ({
+  onSubmit,
+  setRemove,
+  popData,
+  removeData,
+}) => {
   let [formData, setFormData] = useState({
     image: null as File | null,
     altImage: null as File | null,
@@ -21,22 +28,25 @@ const MenuForm: React.FC<MenuFormProps> = ({ onSubmit, removeData }) => {
     currency: "रु.",
   });
 
-  const [preview, setPreview] = useState<string | null>(null);
+  const [preview, setPreview] = useState<string | null>(popData?.image || null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
 
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value, name: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+      name: e.target.value,
+    });
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setFormData((prev) => ({ ...prev, image: file, altImage: file}));
+      setFormData((prev) => ({ ...prev, image: file, altImage: file }));
 
       // Generate preview URL
       const imageUrl = URL.createObjectURL(file);
@@ -58,11 +68,11 @@ const MenuForm: React.FC<MenuFormProps> = ({ onSubmit, removeData }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ ...formData});
+    onSubmit({ ...formData });
   };
 
-   // Reset form when removeData is true
-   useEffect(() => {
+  // Reset form when removeData is true
+  useEffect(() => {
     if (removeData) {
       setFormData({
         image: null,
@@ -80,8 +90,29 @@ const MenuForm: React.FC<MenuFormProps> = ({ onSubmit, removeData }) => {
     }
   }, [removeData]);
 
+  useEffect(() => {
+    if (popData) {
+      setFormData({
+        image: popData.image,
+        name: popData.name,
+        altImage: popData.altImage,
+        title: popData.title,
+        desc: popData.desc,
+        category: popData.category,
+        type: popData.type,
+        disclaimer: popData.disclaimer,
+        rating: popData.rating,
+        price: popData.price,
+        currency: popData.currency,
+      });
+    }
+  }, [popData]);
+
   return (
-    <form onSubmit={handleSubmit} className="lg:shadow-lg lg:p-6 lg:rounded-lg">
+    <form
+      onSubmit={handleSubmit}
+      className={`lg:shadow-lg lg:p-6 lg:rounded-lg ${popData ? "p-6" : ""}`}
+    >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:gap-8 gap-1">
         {/* Title */}
         <div className="mb-4">
@@ -196,6 +227,7 @@ const MenuForm: React.FC<MenuFormProps> = ({ onSubmit, removeData }) => {
           />
         </div>
 
+        {/* Upload Image */}
         <div className="mb-4">
           <label className="block text-red-500 font-semibold mb-2">
             Upload Image
@@ -234,17 +266,30 @@ const MenuForm: React.FC<MenuFormProps> = ({ onSubmit, removeData }) => {
           type="submit"
           className="w-full bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 cursor-pointer"
         >
-          Add Item
+          {popData ? "Update" : "Add Item"}
         </button>
-        <button
-          type="reset"
-          className="w-full bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 cursor-pointer"
-          onClick={() => {
-            
-          }}
-        >
-          Reset
-        </button>
+        {!popData && (
+          <button
+            type="reset"
+            className="w-full bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 cursor-pointer"
+            onClick={() => {
+              setRemove(true);
+            }}
+          >
+            Reset
+          </button>
+        )}
+        {popData && (
+          <button
+            type="reset"
+            className="w-full bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 cursor-pointer"
+            onClick={() => {
+              setRemove(false);
+            }}
+          >
+            Cancel
+          </button>
+        )}
       </div>
     </form>
   );

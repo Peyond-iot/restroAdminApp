@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import MenuForm from "../menu_form/menu_form.tsx";
 
 const login: any = sessionStorage.getItem("login");
 const token = JSON.parse(login);
@@ -9,7 +10,8 @@ const Menu = () => {
   const [query, setQuery] = useState("");
   const [dupData, setDupData] = useState<any>();
   const [showPopup, setShowPopup] = useState(false);
-  const [selectedMenu, setSelectedMenu] = useState<any>()
+  const [showEditPopup, setShowEditPopup] = useState(false);
+  const [selectedMenu, setSelectedMenu] = useState<any>();
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -61,8 +63,7 @@ const Menu = () => {
     }
   };
 
-
-  let deleteMenu = async(menu: any) => {
+  let deleteMenu = async (menu: any) => {
     setLoading(true);
     const requestOptions: any = {
       method: "DELETE",
@@ -87,10 +88,14 @@ const Menu = () => {
     } catch (error) {
       setLoading(false);
     }
-  }
+  };
+
+  let handleMenuSubmit = (menuData: any) => {
+    console.log(menuData);
+  };
 
   return (
-    <div className="py-6 relative min-h-[80vh]">
+    <div className="py-6 relative h-[90vh] lg:h-[70vh] xl:h-[55vh]">
       {loading && (
         <div className="absolute top-0 left-0 w-full h-full flex justify-center items-center bg-white bg-opacity-40 backdrop-blur-sm z-50">
           <div className="p-4 bg-white rounded-full shadow-lg">
@@ -154,14 +159,22 @@ const Menu = () => {
                       {card?.price}
                     </h3>
                     <div className="flex gap-2">
-                      <button className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer">
+                      <button
+                        className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer"
+                        onClick={() => {
+                          setShowEditPopup(true);
+                          setSelectedMenu(card);
+                        }}
+                      >
                         Edit
                       </button>
-                      <button className="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 cursor-pointer"
-                      onClick={()=>{
-                        setShowPopup(true);
-                        setSelectedMenu(card);
-                      }}>
+                      <button
+                        className="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 cursor-pointer"
+                        onClick={() => {
+                          setShowPopup(true);
+                          setSelectedMenu(card);
+                        }}
+                      >
                         Delete
                       </button>
                     </div>
@@ -178,7 +191,10 @@ const Menu = () => {
           <div className="bg-white p-6 rounded-lg shadow-lg text-center">
             <p className="mb-4 text-lg font-semibold">
               Are you sure you want to delete <br />
-              <span className="text-red-500 font-sans">{selectedMenu?.title} </span> ?
+              <span className="text-red-500 font-sans">
+                {selectedMenu?.title}{" "}
+              </span>{" "}
+              ?
             </p>
             <div className="flex justify-center gap-4">
               <button
@@ -189,13 +205,35 @@ const Menu = () => {
               </button>
               <button
                 onClick={() => {
-                  deleteMenu(selectedMenu)
+                  deleteMenu(selectedMenu);
                   setShowPopup(false);
                 }}
                 className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
               >
                 Delete
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Popup */}
+      {showEditPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-transparent bg-opacity-40 backdrop-blur-sm z-50 overflow-hidden px-6">
+          <div className="bg-white rounded-lg shadow-lg w-full max-w-md max-h-[90vh] flex flex-col">
+            {/* Fixed Header */}
+            <h2 className="text-red-500 font-serif font-bold text-2xl p-6 !pb-2 sticky top-0 bg-white z-10">
+              Update Menu
+            </h2>
+
+            {/* Scrollable Content */}
+            <div className="overflow-y-auto p-1 flex-1">
+              <MenuForm
+                onSubmit={handleMenuSubmit}
+                removeData={false}
+                popData={selectedMenu}
+                setRemove={setShowEditPopup}
+              />
             </div>
           </div>
         </div>
